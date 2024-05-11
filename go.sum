@@ -22,7 +22,11 @@ github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe/go.mod h1:wL8QJ
 github.com/mytodolist1/todolist_be v0.0.1 h1:7zp1ppxLwu7CgUOV/cNPWTtGM+SiM9rNLxACQFzCZMI=
 github.com/mytodolist1/todolist_be v0.0.1/go.mod h1:Zlu89HBj4S8gyvuH6SjwPhgM4wKkVE9CDzv7E/vXqsY=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
+github.com/rs/cors v1.11.0 h1:0B9GE/r9Bc2UxRMMtymBkHTenPkHDv0CW4Y98GBY+po=
+github.com/rs/cors v1.11.0/go.mod h1:XyqrcTp5zjWr1wsJ8PIRZssZ8b/WMcMf71DJnit4EMU=
 github.com/stretchr/testify v1.9.0 h1:HtqpIVDClZ4nwg75+f6Lvsy/wHu+3BoSGCbBAcpTsTg=
+github.com/tbxark/g4vercel v0.0.4 h1:KJGsz0/tarMKwEQbBlToAvcUTvPU5XMz1NJ7WpgwHAw=
+github.com/tbxark/g4vercel v0.0.4/go.mod h1:ixnfFruSriTYP/dZ+GxB/hkYMOhmozYkEZ780Ws2Hhk=
 github.com/xdg-go/pbkdf2 v1.0.0 h1:Su7DPu48wXMwC3bs7MCNG+z4FhcyEuz5dlvchbq0B0c=
 github.com/xdg-go/pbkdf2 v1.0.0/go.mod h1:jrpuAogTd400dnrH08LKmI/xc1MbPOebTwRqcT5RDeI=
 github.com/xdg-go/scram v1.1.2 h1:FHX5I5B4i4hKRVRBCFRxq1iQRej7WO3hhBuJf+UUySY=

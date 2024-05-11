@@ -1,31 +1,77 @@
 package api
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
+	"os"
 
-	"github.com/gorilla/mux"
-	"github.com/mytodolist1/todolist_be/config"
-	. "github.com/mytodolist1/todolist_be/handler"
-	"github.com/mytodolist1/todolist_be/model"
+	"github.com/mytodolist1/todolist_be/modul"
+	"github.com/mytodolist1/todolist_be/paseto"
+	. "github.com/tbxark/g4vercel"
 )
 
-var (
-	datauser model.User
-	// datatodo      model.Todo
-	// datatodoclear model.TodoClear
-	// responseData  bson.M
-)
+func Handler(w http.ResponseWriter, r *http.Request) {
+	server := New()
+	server.Use(Recovery(func(err interface{}, c *Context) {
+		if httpError, ok := err.(HttpError); ok {
+			c.JSON(httpError.Status, H{
+				"message": httpError.Error(),
+			})
+		} else {
+			message := fmt.Sprintf("%s", err)
+			c.JSON(500, H{
+				"message": message,
+			})
+		}
+	}))
 
-var mconn = config.MongoConnect("MONGOSTRING", "mytodolist")
+	server.GET("/", func(context *Context) {
+		context.JSON(200, H{
+			"message": "Hello World!",
+		})
+	})
 
-func Homes(w http.ResponseWriter, r *http.Request) {
-	StatusOK(w, "Welcome to MyTodoList API")
-}
+	server.POST("/login", func(c *Context) {
+		r := c.Req
 
-func init() {
-	router := mux.NewRouter()
-	router.Use(config.CorsMiddleware)
-	router.HandleFunc("/", Homes).Methods("GET")
+		if r.ContentLength == 0 {
+			c.JSON(400, H{
+				"message": "Request body is empty",
+			})
+			return
+		}
 
-	http.ListenAndServe(":8080", router)
+		err := json.NewDecoder(r.Body).Decode(&datauser)
+		if err != nil {
+			c.JSON(400, H{
+				"message": "error parsing application/json: " + err.Error(),
+			})
+			return
+		}
+
+		user, err := modul.LogIn(mconn, "user", datauser)
+		if err != nil {
+			c.JSON(400, H{
+				"message": err.Error(),
+			})
+			return
+		}
+
+		tokenstring, err := paseto.Encode(user.ID.Hex(), user.Role, os.Getenv("PRIVATE_KEY"))
+		if err != nil {
+			c.JSON(400, H{
+				"message": "Gagal Encode Token : " + err.Error(),
+			})
+			return
+		}
+
+		c.JSON(200, H{
+			"message": "User " + user.Username + " has been logged in",
+			"token":   tokenstring,
+			"data":    user,
+		})
+	})
+
+	server.Handle(w, r)
 }

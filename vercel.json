@@ -1,7 +1,5 @@
 {
-    "build": {
-        "env": {
-            "GO_BUILD_TAGS": "-ldflags '-s -w'"
-        }
-    }
-}
+    "routes": [
+      { "src": "/(.*)", "dest": "/api" }
+    ]
+  }
