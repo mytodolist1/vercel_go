@@ -3,10 +3,8 @@ module github.com/mytodolist1/vercel_go
 go 1.20
 
 require (
-	github.com/gorilla/mux v1.8.1
 	github.com/mytodolist1/todolist_be v0.0.1
 	github.com/rs/cors v1.11.0
-	github.com/tbxark/g4vercel v0.0.4
 	go.mongodb.org/mongo-driver v1.15.0
 )
 
