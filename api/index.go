@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 
@@ -11,7 +10,6 @@ import (
 	"github.com/mytodolist1/todolist_be/modul"
 	"github.com/mytodolist1/todolist_be/paseto"
 	"github.com/rs/cors"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -19,7 +17,6 @@ var (
 	datauser      model.User
 	datatodo      model.Todo
 	datatodoclear model.TodoClear
-	responseData  bson.M
 )
 
 var mconn = config.MongoConnect("MONGOSTRING", "mytodolist")
@@ -32,7 +29,6 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	})
 
 	handler := corsMiddleware.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// w.Header().Set("Content-Type", "application/json")
 		switch r.URL.Path {
 		case "/":
 			if r.Method == "GET" {
@@ -489,11 +485,8 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			}
 
 		default:
-			responseData = bson.M{
-				"status":  http.StatusNotFound,
-				"message": "Route not found",
-			}
-			fmt.Fprint(w, h.ReturnStruct(responseData))
+			h.StatusNotFound(w, "Route not found")
+			return
 		}
 	}))
 
