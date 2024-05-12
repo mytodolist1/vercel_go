@@ -1,8 +1,10 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/mytodolist1/todolist_be/config"
 	h "github.com/mytodolist1/todolist_be/handler"
@@ -219,7 +221,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 						}
 						h.StatusOK(w, "User "+user.Username+" has been found", "data", user)
 						return
-						
+
 					} else {
 						payload, err := h.PasetoDecode(w, r, "Authorization")
 						if err != nil {
@@ -525,6 +527,28 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 					h.StatusOK(w, "Log Todo has been found", "data", logs)
 					return
 				}
+			}
+
+		case "/todo/clear/delete":
+			if r.Method == "DELETE" {
+				now := time.Now()
+				location, err := time.LoadLocation("Asia/Jakarta")
+				if err != nil {
+					http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+					return
+				}
+				now = now.In(location)
+				if now.Hour() != 0 || now.Minute() != 0 {
+					fmt.Fprint(w, "Not the scheduled time")
+					return
+				}
+				err = modul.DeleteTodoClear(mconn, "todoclear")
+				if err != nil {
+					h.StatusBadRequest(w, err.Error())
+					return
+				}
+				h.StatusNoContent(w, "Todo has been deleted")
+				return
 			}
 
 		default:
