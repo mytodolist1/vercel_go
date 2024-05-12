@@ -32,7 +32,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case "/":
 			if r.Method == "GET" {
-				h.StatusOK(w, "Welcome to My To Do List API")
+				h.StatusOK(w, "Welcome to Mytodolist API")
 				return
 			}
 
@@ -54,7 +54,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 				}
 				tokenstring, err := paseto.Encode(user.ID.Hex(), user.Role, os.Getenv("PRIVATE_KEY"))
 				if err != nil {
-					h.StatusBadRequest(w, "Gagal Encode Token : "+err.Error())
+					h.StatusBadRequest(w, "Failed to encode token: "+err.Error())
 					return
 				}
 				h.StatusOK(w, "User "+user.Username+" has been logged in", "token", tokenstring, "data", user)
@@ -63,6 +63,10 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 		case "/register":
 			if r.Method == "POST" {
+				if r.ContentLength == 0 {
+					h.StatusMethodNotAllowed(w, "Request body is empty")
+					return
+				}
 				err := h.JDecoder(w, r, &datauser)
 				if err != nil {
 					h.StatusBadRequest(w, "error parsing application/json: "+err.Error())
@@ -215,7 +219,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 						}
 						h.StatusOK(w, "User "+user.Username+" has been found", "data", user)
 						return
-
+						
 					} else {
 						payload, err := h.PasetoDecode(w, r, "Authorization")
 						if err != nil {
@@ -482,6 +486,45 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			default:
 				h.StatusMethodNotAllowed(w, "Method not allowed")
 				return
+			}
+
+		case "/todo/log":
+			if r.Method == "GET" {
+				header := r.Header.Get("AuthorizationA")
+				if header != "" {
+					payload, err := h.PasetoDecode(w, r, "AuthorizationA")
+					if err != nil {
+						h.StatusBadRequest(w, err.Error())
+						return
+					}
+					if payload.Role == "admin" {
+						logs, err := modul.GetLogTodoList(mconn, "logtodo")
+						if err != nil {
+							h.StatusBadRequest(w, err.Error())
+							return
+						}
+						h.StatusOK(w, "All Log Todo has been found", "data", logs)
+						return
+
+					} else {
+						h.StatusUnauthorized(w, "You are not authorized to access this data")
+						return
+					}
+
+				} else {
+					payload, err := h.PasetoDecode(w, r, "Authorization")
+					if err != nil {
+						h.StatusBadRequest(w, err.Error())
+						return
+					}
+					logs, err := modul.GetLogTodoFromUID(mconn, "logtodo", payload.Id)
+					if err != nil {
+						h.StatusBadRequest(w, err.Error())
+						return
+					}
+					h.StatusOK(w, "Log Todo has been found", "data", logs)
+					return
+				}
 			}
 
 		default:
