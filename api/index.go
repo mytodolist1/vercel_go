@@ -537,8 +537,8 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 					return
 				}
 				now = now.In(location)
-				if now.Hour() != 17 || now.Minute() != 0 {
-					h.StatusBadRequest(w, "You can only delete Todo Clear at 17:00")
+				if now.Hour() != 17 || now.Minute() != 15 {
+					h.StatusBadRequest(w, "You can only delete Todo Clear at 17:15")
 					return
 				}
 				err = modul.DeleteTodoClear(mconn, "todoclear")
