@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 	"time"
@@ -534,12 +533,12 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 				now := time.Now()
 				location, err := time.LoadLocation("Asia/Jakarta")
 				if err != nil {
-					http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+					h.StatusBadRequest(w, "error parsing location: "+err.Error())
 					return
 				}
 				now = now.In(location)
-				if now.Hour() != 0 || now.Minute() != 0 {
-					fmt.Fprint(w, "Not the scheduled time")
+				if now.Hour() != 17 || now.Minute() != 0 {
+					h.StatusBadRequest(w, "You can only delete Todo Clear at 17:00")
 					return
 				}
 				err = modul.DeleteTodoClear(mconn, "todoclear")
